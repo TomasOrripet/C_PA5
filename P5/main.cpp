@@ -6,6 +6,25 @@
 using namespace sf;
 using namespace std;
 
+int grid[12][12];
+int sgrid[12][12];
+
+
+void opentile(int x, int y) {
+    if (sgrid[x][y] == 10) {
+        sgrid[x][y] = grid[x][y];
+        if (sgrid[x][y] == 0) {
+            opentile((x + 1), y);
+            opentile((x + 1), (y + 1));
+            opentile((x + 1),(y - 1));
+            opentile(x, y + 1);
+            opentile(x, y - 1);
+            opentile((x - 1), y);
+            opentile((x - 1),(y + 1));
+            opentile((x - 1),(y - 1));
+        }
+    }
+}
 
 
 int main()
@@ -15,10 +34,9 @@ int main()
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
 
     int w = 32;
-    //vector<int, int> grid;
-    //vector<int, int> sgrid;
-    int grid[12][12];
-    int sgrid[12][12]; //for showing
+
+    //int grid[12][12];
+    //int sgrid[12][12]; //for showing
 
     Texture t;
     t.loadFromFile("C:/Users/tommi/source/repos/P5/P5/x64/Release/images/tiles.jpg");
@@ -69,7 +87,8 @@ int main()
                 if (e.key.code == Mouse::Left) {
                     if (sgrid[x][y] == 11) ;
                     else {
-                        sgrid[x][y] = grid[x][y];
+                        opentile(x, y);
+                        /*sgrid[x][y] = grid[x][y];
                         if (sgrid[x][y] == 0) {
                             sgrid[x + 1][y] = grid[x + 1][y];
                             sgrid[x + 1][y + 1] = grid[x + 1][y + 1];
@@ -79,7 +98,7 @@ int main()
                             sgrid[x - 1][y] = grid[x - 1][y];
                             sgrid[x - 1][y + 1] = grid[x - 1][y + 1];
                             sgrid[x - 1][y - 1] = grid[x - 1][y - 1];
-                        }
+                        }*/
                     }
                 }
                 //flag tile or unflag
