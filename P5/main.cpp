@@ -9,8 +9,11 @@ using namespace std;
 int grid[12][12];
 int sgrid[12][12];
 bool DISPLAY = true;
+bool LOSE = false;
 int BOMBS = 0;
 int TILES = 10 * 10;
+int w = 32;
+
 
 
 void opentile(int x, int y) {
@@ -38,7 +41,7 @@ void make_grid() {
         for (int j = 1; j <= 10; j++)
         {
             sgrid[i][j] = 10;
-            if (rand() % 10 == 0) { grid[i][j] = 9; BOMBS++; }
+            if (rand() % 5 == 0) { grid[i][j] = 9; BOMBS++; }
             else grid[i][j] = 0;
         }
 
@@ -61,6 +64,23 @@ void make_grid() {
 }
 
 
+Sprite game_display(int x, int y, Sprite s, int i , int j) {
+    if (LOSE) sgrid[i][j] = grid[i][j];
+    if ((x == i && y == j) && (sgrid[x][y] == 10|| sgrid[x][y] == 9)) {
+        s.setTextureRect(IntRect(sgrid[x][y] * w, 0, w, w));
+        s.setColor(Color(211, 211, 211));
+        if (LOSE)s.setColor(Color::Red);;
+        s.setPosition(x * w, y * w);
+    }
+    else {
+        s.setTextureRect(IntRect(sgrid[i][j] * w, 0, w, w));
+        s.setColor(Color::White);
+        s.setPosition(i * w, j * w);
+    }
+    return s;
+}
+
+
 int main()
 {
     srand(time(0));
@@ -69,43 +89,15 @@ int main()
 
     int w = 32;
 
-    //int grid[12][12];
-    //int sgrid[12][12]; //for showing
 
     Texture t;
-    t.loadFromFile("C:/Users/tommi/source/repos/P5/P5/x64/Release/images/tiles.jpg");
+    t.loadFromFile("../images/tiles.jpg");
     Sprite s(t);
     make_grid();
-    /*
-    //create the inital board
-
-    for (int i = 1; i <= 10; i++)
-        for (int j = 1; j <= 10; j++)
-        {
-            sgrid[i][j] = 10;
-            if (rand() % 10 == 0) { grid[i][j] = 9; BOMBS++;}
-            else grid[i][j] = 0;
-        }
-
-    //counts number of bombs next to tile
-    for (int i = 1; i <= 10; i++)
-        for (int j = 1; j <= 10; j++)
-        {
-            int n = 0;
-            if (grid[i][j] == 9) continue;
-            if (grid[i + 1][j] == 9) n++;
-            if (grid[i][j + 1] == 9) n++;
-            if (grid[i - 1][j] == 9) n++;
-            if (grid[i][j - 1] == 9) n++;
-            if (grid[i + 1][j + 1] == 9) n++;
-            if (grid[i - 1][j - 1] == 9) n++;
-            if (grid[i - 1][j + 1] == 9) n++;
-            if (grid[i + 1][j - 1] == 9) n++;
-            grid[i][j] = n;
-        }*/
 
     while (app.isOpen())
     {
+
         Vector2i pos = Mouse::getPosition(app);
         int x = pos.x / w;
         int y = pos.y / w;
@@ -113,38 +105,30 @@ int main()
         Event e;
         while (app.pollEvent(e))
         {
-            if (e.type == Event::Closed)
+            switch (e.type)
+            {
+            case Event::Closed:
                 app.close();
-
-
-            if (e.type == Event::MouseButtonPressed)
-                
+            case  Event::MouseButtonPressed:
                 if (e.key.code == Mouse::Left) {
                     if (sgrid[x][y] == 11);
                     else {
                         opentile(x, y);
-                        cout << "BOMBS: " << BOMBS << "\nTiles: " << TILES << endl;
                     }
-                    
-                    if (sgrid[x][y] == 9) { 
+                    if (sgrid[x][y] == 9) {
+                        LOSE = true;
+                        DISPLAY = false;
                         for (int i = 1; i <= 10; i++)
                             for (int j = 1; j <= 10; j++) {
-                                sgrid[i][j] = grid[i][j];
-                                if (x == i && y == j) {
-                                    s.setTextureRect(IntRect(sgrid[x][y] * w, 0, w, w));
-                                    s.setColor(Color::Red);
-                                    s.setPosition(x * w, y * w);
-                                    app.draw(s);
-                                }
-                                else {
-                                    s.setTextureRect(IntRect(sgrid[i][j] * w, 0, w, w));
-                                    s.setColor(Color::White);
-                                    s.setPosition(i * w, j * w);
-                                    app.draw(s);
-                                }
+                                //game_display(x, y, s, i, j);
+                                app.draw(game_display(x, y, s, i, j));
                             }
-                        if (DISPLAY)app.display();
-                        DISPLAY = false; }
+                        
+                    }
+                    app.display();
+                        
+                        
+                        
                 }
                 //flag tile or unflag
                 else if (e.key.code == Mouse::Right) {
@@ -154,39 +138,27 @@ int main()
                     else {
                         sgrid[x][y] = 10;
                     }
-                    
-                }
-            
-        }
-
-        app.clear(Color::White);
-
-        for (int i = 1; i <= 10; i++)
-            for (int j = 1; j <= 10; j++){
-                if ((x == i && y == j)&&(sgrid[x][y] == 10)) {
-                    s.setTextureRect(IntRect(sgrid[x][y] * w, 0, w, w));
-                    s.setColor(Color (211,211,211));
-                    s.setPosition(x * w, y * w);
-                    app.draw(s);
-                }
-                else {
-                    s.setTextureRect(IntRect(sgrid[i][j] * w, 0, w, w));
-                    s.setColor(Color::White);
-                    s.setPosition(i * w, j * w);
-                    app.draw(s);
 
                 }
-                
+
+
+            default:
+                app.clear(Color::White);
+                for (int i = 1; i <= 10; i++)
+                    for (int j = 1; j <= 10; j++) {
+                        //game_display(x, y, s, i, j);
+                        app.draw(game_display(x, y, s, i, j));
+                    }
+
+                if (DISPLAY) app.display();
+                if (BOMBS == TILES) DISPLAY = false;
+
+                if ((e.key.code == Keyboard::R)) {
+                    make_grid();
+                    DISPLAY = true;
+                }
             }
-        
-        if(DISPLAY) app.display();
-        if (BOMBS == TILES) DISPLAY = false;
-            
-        if ((e.key.code == Keyboard::R)) {
-            make_grid();
-            DISPLAY = true;
         }
-        
     }
 
     return 0;
