@@ -19,4 +19,7 @@ Project properties instruction:
   ![image](https://user-images.githubusercontent.com/70690540/161299641-96dd18cf-2be9-4bbd-974c-86ca25222e56.png)
   (the additional dependencies are sfml-system.lib;sfml-window.lib;sfml-graphics.lib;)
 
+  once all that is done you build the projects for debug and release
+  
+  last step is to add the release and debug dll zip file contents into the release and debug located in the x64 folder 
   
