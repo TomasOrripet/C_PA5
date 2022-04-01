@@ -87,8 +87,6 @@ int main()
 
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
 
-    int w = 32;
-
 
     Texture t;
     t.loadFromFile("../images/tiles.jpg");
@@ -111,26 +109,23 @@ int main()
                 app.close();
             case  Event::MouseButtonPressed:
                 if (e.key.code == Mouse::Left) {
-                    if (sgrid[x][y] == 11);
-                    else {
-                        opentile(x, y);
-                    }
+                    if (sgrid[x][y] != 11) opentile(x, y);
+
                     if (sgrid[x][y] == 9) {
                         LOSE = true;
-                        DISPLAY = false;
+                        
                         for (int i = 1; i <= 10; i++)
                             for (int j = 1; j <= 10; j++) {
-                                //game_display(x, y, s, i, j);
                                 app.draw(game_display(x, y, s, i, j));
                             }
-                        
+                    if (DISPLAY) app.display();
+                    DISPLAY = false;
                     }
-                    app.display();
+                    
                         
                         
                         
                 }
-                //flag tile or unflag
                 else if (e.key.code == Mouse::Right) {
                     if (sgrid[x][y] == 10) {
                         sgrid[x][y] = 11;
@@ -143,19 +138,22 @@ int main()
 
 
             default:
-                app.clear(Color::White);
-                for (int i = 1; i <= 10; i++)
-                    for (int j = 1; j <= 10; j++) {
-                        //game_display(x, y, s, i, j);
-                        app.draw(game_display(x, y, s, i, j));
-                    }
-
-                if (DISPLAY) app.display();
+                if (DISPLAY) {
+                    app.clear(Color::White);
+                    for (int i = 1; i <= 10; i++)
+                        for (int j = 1; j <= 10; j++) {
+                            //game_display(x, y, s, i, j);
+                            app.draw(game_display(x, y, s, i, j));
+                        }
+                    app.display();
+                }
+                
                 if (BOMBS == TILES) DISPLAY = false;
 
                 if ((e.key.code == Keyboard::R)) {
                     make_grid();
                     DISPLAY = true;
+                    LOSE = false;
                 }
             }
         }
