@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <time.h>
-#include <vector>
+#include <sstream>
 
 using namespace sf;
 using namespace std;
@@ -48,10 +48,8 @@ void make_grid() {
 
     int added_bombs = 0;
     do{
-        cout << added_bombs << endl;
         int x = (rand() % 10)+ 1;
         int y = (rand() % 10) + 1;
-        cout << "X: " << x << "Y; " << y << endl;
         if (grid[x][y] != 9) {
             grid[x][y] = 9;
             added_bombs++;
@@ -66,25 +64,6 @@ void make_grid() {
         }
 
     } while (BOMBS > added_bombs);
-
-
-    /*
-    //counts number of bombs next to tile
-    for (int i = 1; i <= 10; i++)
-        for (int j = 1; j <= 10; j++)
-        {
-            int n = 0;
-            if (grid[i][j] == 9) continue;
-            if (grid[i + 1][j] == 9) n++;
-            if (grid[i][j + 1] == 9) n++;
-            if (grid[i - 1][j] == 9) n++;
-            if (grid[i][j - 1] == 9) n++;
-            if (grid[i + 1][j + 1] == 9) n++;
-            if (grid[i - 1][j - 1] == 9) n++;
-            if (grid[i - 1][j + 1] == 9) n++;
-            if (grid[i + 1][j - 1] == 9) n++;
-            grid[i][j] = n;
-        }*/
 }
 
 
@@ -109,6 +88,8 @@ int main()
 {
     srand(time(0));
 
+    Clock clock;
+
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
 
 
@@ -118,12 +99,13 @@ int main()
     make_grid();
 
     while (app.isOpen())
-    {
+    {   
 
         Vector2i pos = Mouse::getPosition(app);
         int x = pos.x / w;
         int y = pos.y / w;
-
+        
+        
         Event e;
         while (app.pollEvent(e))
         {
@@ -169,13 +151,21 @@ int main()
                             //game_display(x, y, s, i, j);
                             app.draw(game_display(x, y, s, i, j));
                         }
+                    
                     app.display();
                 }
                 
-                if (BOMBS == TILES) DISPLAY = false;
+                if (BOMBS == TILES && DISPLAY) {
+                    DISPLAY = false;
+                    Time elapsed1 = clock.getElapsedTime();
+                    cout << "Congrats you won in " << elapsed1.asSeconds() << " secounds!" << endl;
+                    cout << "press R to restart" << endl;
+                }
 
                 if ((e.key.code == Keyboard::R)) {
+                    TILES = 100;
                     make_grid();
+                    clock.restart();
                     DISPLAY = true;
                     LOSE = false;
                 }
