@@ -10,7 +10,7 @@ int grid[12][12];
 int sgrid[12][12];
 bool DISPLAY = true;
 bool LOSE = false;
-int BOMBS = 0;
+int BOMBS = 15;
 int TILES = 10 * 10;
 int w = 32;
 
@@ -35,16 +35,40 @@ void opentile(int x, int y) {
 
 
 void make_grid() {
-    //create the inital board
+    //create the inital board and add bombs
 
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= 10; i++) {
         for (int j = 1; j <= 10; j++)
         {
             sgrid[i][j] = 10;
-            if (rand() % 5 == 0) { grid[i][j] = 9; BOMBS++; }
-            else grid[i][j] = 0;
+            grid[i][j] = 0;
+        }
+    }
+
+
+    int added_bombs = 0;
+    do{
+        cout << added_bombs << endl;
+        int x = (rand() % 10)+ 1;
+        int y = (rand() % 10) + 1;
+        cout << "X: " << x << "Y; " << y << endl;
+        if (grid[x][y] != 9) {
+            grid[x][y] = 9;
+            added_bombs++;
+            if (grid[x + 1][y] != 9) grid[x + 1][y]++;
+            if (grid[x][y + 1] != 9) grid[x][y + 1]++;
+            if (grid[x - 1][y] != 9) grid[x - 1][y]++;
+            if (grid[x][y - 1] != 9) grid[x][y - 1]++;
+            if (grid[x + 1][y + 1] != 9) grid[x + 1][y + 1]++;
+            if (grid[x - 1][y - 1] != 9) grid[x - 1][y - 1]++;
+            if (grid[x - 1][y + 1] != 9) grid[x - 1][y + 1]++;
+            if (grid[x + 1][y - 1] != 9) grid[x + 1][y - 1]++;
         }
 
+    } while (BOMBS > added_bombs);
+
+
+    /*
     //counts number of bombs next to tile
     for (int i = 1; i <= 10; i++)
         for (int j = 1; j <= 10; j++)
@@ -60,7 +84,7 @@ void make_grid() {
             if (grid[i - 1][j + 1] == 9) n++;
             if (grid[i + 1][j - 1] == 9) n++;
             grid[i][j] = n;
-        }
+        }*/
 }
 
 
